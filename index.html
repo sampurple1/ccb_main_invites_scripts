@@ -129,7 +129,7 @@
 
     <script>
         const SERVER_URL = 'https://lazy-lynx-75.sampurple1.deno.net';
-        const COOLDOWN_TIME = 120; // 120 seconds = 2 minutes
+        const COOLDOWN_TIME = 240; // 240 seconds = 4 minutes
 
         // Check cooldown on page load
         window.addEventListener('DOMContentLoaded', checkCooldown);
@@ -205,8 +205,10 @@
                     startCooldown(COOLDOWN_TIME);
                 } else if (response.ok && !data.success) {
                     showMessage(data.message, 'info');
-                    sendBtn.disabled = false;
-                    sendBtn.textContent = 'Send Invites';
+                    // Still start cooldown even if unsuccessful to prevent spam
+                    const now = Math.floor(Date.now() / 1000);
+                    localStorage.setItem('lastInviteTime', now);
+                    startCooldown(COOLDOWN_TIME);
                 } else {
                     showMessage(data.error || 'Failed to send invites', 'error');
                     sendBtn.disabled = false;
